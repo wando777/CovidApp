@@ -12,104 +12,76 @@ $(document).ready(function(){
 
         request.onload = function(){
             let responseData = request.response
-            // console.log(responseData)
-            formatData(responseData)
+            if(stateName){
+                formatDataSearch(responseData.data,stateName)
+            }else{
+                // console.log(responseData.data)
+                formatData(responseData.data)
+            }
         }
     }
 
-    // function showData(state){
-    //     console.log(state)
-    // }
+    function showData(state){
+        $("#user_table").append("<tr>")
 
-    function formatData(users){
+        let object_keys = Object.keys(state);
+        for(let key=0; key< object_keys.length; key++){
+
+            let currentKey = object_keys[key]
+            // console.log(currentKey)
+            $("#user_table").append("<td>" + state[currentKey] + "</td>")
+        }
+        $("#user_table").append("</tr>")
+    }
+
+    function showState(state){
+        $("#search_table").append("<tr>")
+
+        let object_keys = Object.keys(state);
+        for(let key=0; key< object_keys.length; key++){
+            let currentKey = object_keys[key]
+            $("#search_table").append("<td>" + state[currentKey] + "</td>")
+        }
+        $("#search_table").append("</tr>")
+    }
+
+    function formatData(states){
         // console.log(states.length)
-        for(let i = 0; i < users.length; i++){
-            console.log(users[i]);
+        for(let i = 0; i < states.length; i++){
+            // console.log(states[i]);
+            let state = {
+                state: states[i].state,
+                cases: states[i].cases,
+                deaths: states[i].deaths
+            }
+            showData(state)
         }
     }
 
-    // function getUsers(userName){
-    //     let request = new XMLHttpRequest()
+    function formatDataSearch(jsonArray, stateName){
+        let notFind = true
+        for(let i=0; i < jsonArray.length; i++){
+            if(jsonArray[i].state == stateName){
+                let search = {
+                    state: jsonArray[i].state,
+                    cases: jsonArray[i].cases,
+                    deaths: jsonArray[i].deaths
+                }
+                // console.log(search)
+                showState(search)
+                notFind = false
+            }
+        }
+        if(notFind){
+            $("#userContent").append("State not found!")
+        }
+        $("#userContent").append("<a href='#' target='_blank'>Voltar</a>")
+    }
 
-    //     let url = userName ? `${urlApiGitHub}/${userName}` : urlApiGitHub
+    $("#btnPesquisar").click(function(){
+        $("#homeContent").hide();
+        $("#userContent").show();
 
-    //     //Verbos HTTP
-    //     //GET, PUT, POST, DELETE
-    //     request.open('GET', url) 
-    //     request.responseType = 'json'
-    //     request.send()
-
-    //     request.onload = function(){
-    //         let responseData = request.response
-
-    //         if(userName)
-    //         {
-    //             formatUser(responseData)
-    //         }
-    //         else
-    //         {
-    //             formatUsers(responseData)
-    //         }
-    //     }
-    // }
-
-    // function formatUser(user){
-    //    if(user.name == null){
-    //        $("#userContent").append("Usuário não encontrado!")
-    //    }
-    //    else{
-    //     $("#userContent").append(`Usuário: ${user.state} <br>`)
-    //     // $("#userContent").append(`<img src='${user.}' alt='Avatar' width=60 /> <br>`)
-    //     showUser(user)
-    //    }
-
-
-    //    $("#userContent").append("<a href='#' target='_blank'>Voltar</a>")
-
-    // }
-
-    // function formatUsers(users){
-    //     for(let i=0; i < users.length; i++){
-            
-    //         let user = {
-    //             state: users[i].state,
-    //             cases: users[i].cases,
-    //             deaths: users[i].deaths
-    //         }
-
-    //         showUser(user)
-    //     }
-    // }
-
-    // function showUser(user){
-    //     $("#user_table").append("<tr>")
-
-    //     let object_keys = Object.keys(user);
-
-    //     for(let key=0; key< object_keys.length; key++){
-
-    //         let currentKey = object_keys[key]
-    //         // if(currentKey === "avatar"){
-    //         //     let img = "<img src=" + user[currentKey] + " alt='Avatar' width=60 />"
-    //         //     $("#user_table").append("<td>" + img + "</td>")
-    //         // }
-    //         // else if(currentKey === "url"){
-    //         //     let a = "<a href=" + user[currentKey] + " target='_blank'>" + user[currentKey] + "</a>"
-    //         //     $("#user_table").append("<td>" + a + "</td>")  
-    //         // }
-    //         // else{
-    //             $("#user_table").append("<td>" + user[currentKey] + "</td>")  
-    //         // }
-    //     }
-
-    //     $("#user_table").append("</tr>")
-    // }
-    
-    // $("#btnPesquisar").click(function(){
-    //     $("#homeContent").hide();
-    //     $("#userContent").show();
-
-    //     let userName = $("input").val()
-    //     getUsers(userName)
-    // })
-})
+        let stateName = $("input").val()
+        getStates(stateName)
+    })
